@@ -1,0 +1,28 @@
+
+Header set Access-Control-Allow-Origin *
+php_value display_errors 1
+
+ErrorDocument 403 /errors/403.php
+ErrorDocument 404 /errors/404.php
+ErrorDocument 500 /errors/500.php
+
+RewriteEngine on
+
+# username like example.com/@username
+RewriteRule ^@([0-9a-zA-Z_.]+) user.php?username=$1 [NC]
+# clean the username string in php
+# echo preg_replace('#[^0-9a-zA-Z_.]#', '', $_GET['username']);
+
+# url without .php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.*)$ $1.php
+
+# stop hotlinking of resources
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?client90.000webhostapp.com/.*$ [NC]
+RewriteCond %{HTTP_REFERER} !^https?://([^.]+\.)?rexwebmedia.com/.*$ [NC]
+RewriteRule \.(gif|jpg|jpeg|mp3|png|pdf|zip|js|css)$ - [F]
+
+# NC makes rule non case sensitive
+# L  makes it last rule
